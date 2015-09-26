@@ -13,12 +13,13 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            android:src="@drawable/background" />
+            android:src="@drawable/background2" />
 
         <TextView
             android:id="@+id/country_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="#ffffff"
             android:paddingLeft="16dp"
             android:paddingTop="16dp"
             android:text="Country: "
@@ -26,6 +27,7 @@
 
         <TextView
             android:id="@+id/Country"
+            android:textColor="#ffffff"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBaseline="@+id/country_title"
@@ -34,6 +36,7 @@
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <TextView
+            android:textColor="#ffffff"
             android:id="@+id/MainWeather_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -43,6 +46,7 @@
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <TextView
+            android:textColor="#ffffff"
             android:id="@+id/MainWeather"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -52,6 +56,7 @@
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <TextView
+            android:textColor="#ffffff"
             android:id="@+id/Pressure_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -61,6 +66,7 @@
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <TextView
+            android:textColor="#ffffff"
             android:id="@+id/Pressure"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -70,6 +76,7 @@
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <TextView
+            android:textColor="#ffffff"
             android:id="@+id/WindSpeed_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -80,6 +87,7 @@
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <TextView
+            android:textColor="#ffffff"
             android:id="@+id/WindSpeed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -1,11 +1,16 @@
 package com.weather.cherkassy;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +27,14 @@ public class CharkassyWeather extends AppCompatActivity {
     private TextView mWeather;
     private TextView mPressure;
     private TextView mWindSpeed;
+    private ImageView LoadedImage;
+
+    private View mContentView;
+    private View mProgressBar;
+
+    private static final String IS_WEATHER_LOADED = "IS_WEATHER_LOADED";
+    private boolean mIsWeatherLoaded = false;
+    private WeatherData savedData = WeatherData.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,9 +45,31 @@ public class CharkassyWeather extends AppCompatActivity {
         mWeather = (TextView) findViewById(R.id.MainWeather);
         mPressure = (TextView) findViewById(R.id.Pressure);
         mWindSpeed = (TextView) findViewById(R.id.WindSpeed);
+        LoadedImage = (ImageView) findViewById(R.id.LoadedImage);
+        mContentView = findViewById(R.id.content_view);
+        mProgressBar = findViewById(R.id.progress_bar);
 
-        GetWeatherWork task = new GetWeatherWork();
-        task.execute("234234");
+        mIsWeatherLoaded = savedInstanceState != null && savedInstanceState.getBoolean(IS_WEATHER_LOADED);
+        if (!mIsWeatherLoaded) {
+            GetWeatherWork weatherLoadingTask = new GetWeatherWork();
+            mContentView.setVisibility(View.GONE);
+            mProgressBar.setVisibility(View.VISIBLE);
+            weatherLoadingTask.execute("234234");
+        }
+        else
+        {
+            mCountry.setText(savedData.country);
+            mWeather.setText(savedData.weather);
+            mPressure.setText(savedData.pressure + " hPa");
+            mWindSpeed.setText(savedData.wind + " meter/sec");
+            LoadedImage.setImageBitmap(savedData.icon);
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean(IS_WEATHER_LOADED, mIsWeatherLoaded);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -66,6 +101,7 @@ public class CharkassyWeather extends AppCompatActivity {
             String WEATHER_URL = "http://api.openweathermap.org/data/2.5/weather?q=Cherkasy";
             InputStream weatherStream = null;
             try {
+                Thread.sleep(10000);
                 weatherStream = new URL(WEATHER_URL).openStream();
                 String weatherString = ConvertStreamToString(weatherStream);
                 Log.v("response", weatherString);
@@ -101,6 +137,10 @@ public class CharkassyWeather extends AppCompatActivity {
 
                     JSONObject res1 = jsonObject.getJSONArray("weather").getJSONObject(0);
                     String weather = res1.getString("main");
+                    String iconLink = res1.getString("icon");
+
+                    IconLoadingTask iconLoadingTask = new IconLoadingTask();
+                    iconLoadingTask.execute(Constants.ICON_BASE_URL + iconLink + ".png");
 
                     res = jsonObject.getJSONObject("wind");
                     String wind = res.getString("speed");
@@ -115,10 +155,44 @@ public class CharkassyWeather extends AppCompatActivity {
                     mWindSpeed.setText(wind + " meter/sec");
 
 
+                    savedData.country = country;
+                    savedData.weather = weather;
+                    savedData.wind = wind;
+                    savedData.pressure = pressure;
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
+        }
+    }
+
+    class IconLoadingTask extends AsyncTask<String, Void, Bitmap> {
+
+        @Override
+        protected Bitmap doInBackground(String... params) {
+            // create stream object and try
+            InputStream iconStream = null;
+            try {
+                iconStream = new URL(params[0]).openStream();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return BitmapFactory.decodeStream(iconStream);
+            // catch exceptions and close stream
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            super.onPostExecute(bitmap);
+            LoadedImage.setImageBitmap(bitmap);
+
+            savedData.icon = bitmap;
+            mIsWeatherLoaded = true;
+
+            mProgressBar.setVisibility(View.GONE);
+            mContentView.setVisibility(View.VISIBLE);
         }
     }
 }
